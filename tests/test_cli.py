@@ -342,6 +342,7 @@ def test_test_files_and_skipped_directories_are_left_out(tmp_path):
     write_source(tmp_path, "src/app.spec.cts", "export {}\n")
     write_source(tmp_path, "src/widget.cts", "export {}\n")
     write_source(tmp_path, "src/Form.Designer.cs", "partial class Form {}\n")
+    write_source(tmp_path, "src/lib/bin/Debug/Generated.cs", "class G {}\n")
     relative = [path.relative_to(tmp_path).as_posix() for path in iter_source_files([tmp_path])]
     assert sorted(relative) == ["src/app.py", "src/widget.cts"]
     assert is_generated_source("src/Form.Designer.cs")

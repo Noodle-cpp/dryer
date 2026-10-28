@@ -42,6 +42,9 @@ SKIP_DIRS = {
     "testdata",
     "__pycache__",
     ".clj-kondo",
+    "bin",
+    "obj",
+    ".vs",
 }
 
 TEST_DIRS = {"test", "tests", "spec", "specs", "__tests__"}

@@ -107,6 +107,8 @@ DUPLICATE score=0.89
 
 Clojure reader conditionals keep the `:clj` branch, as dry4clj does. Syntax-quote is kept as a `syntax-quote` form rather than expanded.
 
+C# / .NET project layout: [docs/csharp-project.md](docs/csharp-project.md).
+
 A missing or unreadable Clojure form is reported on stderr. Forms read before it are still compared. The run exits `0` after a report, `1` on a usage error, and `2` on an unknown `--format`.
 
 ## Development

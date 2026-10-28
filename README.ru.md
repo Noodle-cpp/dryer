@@ -107,6 +107,8 @@ DUPLICATE score=0.89
 
 Reader-conditional в Clojure сохраняет ветку `:clj`, как dry4clj. Syntax-quote остаётся формой `syntax-quote`, без развёртки.
 
+C# / .NET: обход solution и границы методов — [docs/csharp-project.ru.md](docs/csharp-project.ru.md).
+
 Отсутствующая или нечитаемая форма Clojure сообщается в stderr. Уже прочитанные формы всё равно сравниваются. Код выхода `0` после отчёта, `1` при ошибке использования, `2` при неизвестном `--format`.
 
 ## Разработка
