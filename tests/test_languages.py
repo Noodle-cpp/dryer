@@ -111,11 +111,31 @@ pub fn beta(items: Vec<i32>) -> Vec<i32> {
 }
 """
 
+CSHARP_LEFT = """\
+class Left {
+  int Alpha(int[] xs) {
+    int[] ys = Filter(xs, Odd);
+    return Map(ys, Inc);
+  }
+}
+"""
+
+CSHARP_RIGHT = """\
+class Right {
+  int Beta(int[] items) {
+    int[] kept = Filter(items, Even);
+    return Map(kept, Dec);
+  }
+}
+"""
+
 
 def test_each_language_matches_renamed_locals(tmp_path):
     samples = {
         "left.java": JAVA_LEFT,
         "right.java": JAVA_RIGHT,
+        "left.cs": CSHARP_LEFT,
+        "right.cs": CSHARP_RIGHT,
         "left.go": GO_LEFT,
         "right.go": GO_RIGHT,
         "left.py": PY_LEFT,
@@ -133,7 +153,7 @@ def test_each_language_matches_renamed_locals(tmp_path):
     by_language = {}
     for item in found:
         by_language.setdefault(item.language, []).append(item)
-    assert set(by_language) == {"java", "go", "python", "typescript", "rust"}
+    assert set(by_language) == {"java", "csharp", "go", "python", "typescript", "rust"}
     assert [(item.left.file, item.right.file) for item in by_language["typescript"]] == [
         ("left.ts", "right.ts"),
         ("left.tsx", "right.tsx"),
@@ -237,7 +257,9 @@ class Right {
 
 
 def _suffix(language: str) -> str:
-    return {"python": "py", "go": "go", "rust": "rs", "java": "java", "typescript": "ts"}[language]
+    return {"python": "py", "go": "go", "rust": "rs", "java": "java", "csharp": "cs", "typescript": "ts"}[
+        language
+    ]
 
 
 def test_callee_names_stay_and_member_names_do_not(tmp_path):
@@ -426,6 +448,26 @@ abstract class Left {
 }
 """,
         "a.java",
+    ) == [(3, 10)]
+
+
+def test_csharp_keeps_the_method_that_has_its_own_body():
+    assert spans(
+        "csharp",
+        """\
+abstract class Left {
+  abstract int Declared(int[] xs);
+  int Alpha(int[] xs) {
+    class Inner {
+      int Run(int[] ys) {
+        return ys.Length;
+      }
+    }
+    return xs.Length;
+  }
+}
+""",
+        "a.cs",
     ) == [(3, 10)]
 
 

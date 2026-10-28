@@ -71,6 +71,28 @@ def _rust_in_tests(data: bytes, node) -> bool:
     return False
 
 
+def _csharp_nodes(data: bytes, root) -> list:
+    nested_types = {
+        "method_declaration",
+        "constructor_declaration",
+        "local_function_statement",
+        "lambda_expression",
+        "anonymous_function_expression",
+    }
+    found = []
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node.type == "method_declaration":
+            nested = _inside(node, nested_types)
+            has_body = _has(node, "block") or _has(node, "arrow_expression_clause")
+            if has_body and not nested:
+                found.append(node)
+            continue
+        stack.extend(reversed(node.children))
+    return found
+
+
 def _java_nodes(data: bytes, root) -> list:
     found = []
     stack = [root]
@@ -145,6 +167,7 @@ def _rust_nodes(data: bytes, root) -> list:
 
 _PICKERS = {
     "java": ("java", _java_nodes),
+    "csharp": ("csharp", _csharp_nodes),
     "go": ("go", _go_nodes),
     "python": ("python", _python_nodes),
     "typescript": (_grammar, _typescript_nodes),

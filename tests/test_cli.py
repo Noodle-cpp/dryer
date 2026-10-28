@@ -13,7 +13,7 @@ from dryer.cli import (
     run,
     select_files,
 )
-from dryer.discover import is_test_file, iter_source_files, language_of
+from dryer.discover import is_generated_source, is_test_file, iter_source_files, language_of
 
 
 def write_source(root: Path, name: str, text: str) -> None:
@@ -26,6 +26,7 @@ def test_language_detection():
     assert language_of("src/app/core.clj") == "clojure"
     assert language_of("src/app/core.cljd") == "clojure"
     assert language_of("Widget.java") == "java"
+    assert language_of("Board.cs") == "csharp"
     assert language_of("board.go") == "go"
     assert language_of("ui/view.tsx") == "typescript"
     assert language_of("src/lib.rs") == "rust"
@@ -171,10 +172,12 @@ def test_names_that_are_tests():
         "pkg/foo_test.py",
         "pkg/test_foo.py",
         "tests/app.py",
+        "src/FooTests.cs",
     ]
     for name in names:
         assert is_test_file(name), name
     assert not is_test_file("src/app.py")
+    assert not is_test_file("src/Board.cs")
 
 
 def _init_repo(path: Path) -> None:
@@ -338,8 +341,10 @@ def test_test_files_and_skipped_directories_are_left_out(tmp_path):
     write_source(tmp_path, "src/app.test.cts", "export {}\n")
     write_source(tmp_path, "src/app.spec.cts", "export {}\n")
     write_source(tmp_path, "src/widget.cts", "export {}\n")
+    write_source(tmp_path, "src/Form.Designer.cs", "partial class Form {}\n")
     relative = [path.relative_to(tmp_path).as_posix() for path in iter_source_files([tmp_path])]
     assert sorted(relative) == ["src/app.py", "src/widget.cts"]
+    assert is_generated_source("src/Form.Designer.cs")
 
 
 def test_a_second_report_replaces_the_snapshot(tmp_path, capsys):
