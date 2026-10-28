@@ -111,6 +111,15 @@ C# / .NET: обход solution и границы методов — [docs/csharp
 
 Отсутствующая или нечитаемая форма Clojure сообщается в stderr. Уже прочитанные формы всё равно сравниваются. Код выхода `0` после отчёта, `1` при ошибке использования, `2` при неизвестном `--format`.
 
+## Сборка без Python (Windows)
+
+```powershell
+.\scripts\build-standalone.ps1
+# → dist\dryer.exe
+```
+
+См. [Noodle-cpp/ub — STANDALONE.ru.md](https://github.com/Noodle-cpp/ub/blob/master/docs/STANDALONE.ru.md).
+
 ## Разработка
 
 ```bash
