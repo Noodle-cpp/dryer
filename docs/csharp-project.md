@@ -2,34 +2,41 @@
 
 Short checklist for **duplicate candidates** and `.metrics/dry.edn`.
 
-Dryer does **not** run tests or read coverage. It walks production `.cs` files and compares normalized method bodies — same boundaries as crapper and mutator.
+Dryer does not run tests, read coverage, or require **`dotnet`**. It walks production `.cs` files and compares normalized method bodies — same boundaries as [crapper](https://github.com/Noodle-cpp/crapper/blob/main/docs/csharp-project.md) and [mutator](https://github.com/Noodle-cpp/mutator/blob/main/docs/csharp-project.md).
 
 ## Solution layout
 
-- Production `.cs` under your libraries.
-- Test projects, `*Tests.cs`, and generated sources are skipped.
-- **`bin/`**, **`obj/`**, **`.vs/`** are skipped while walking the tree.
+- Production `.cs` in library projects.
+- Skipped: test projects, `*Tests.cs`, generated sources, **`bin/`**, **`obj/`**, **`.vs/`**.
+- No Coverlet, Maven, or passing tests required.
 
-Coverlet and test projects are not required.
+## Snapshot rules
 
-## Compared vs skipped
+Compared: methods with `{ }` or `=>` bodies. Skipped: constructors, accessors, lambdas/local functions as separate entries, test/generated files.
 
-Compared: methods with `{ }` or `=>` bodies. Skipped: constructors, accessors, lambdas/local functions as separate entries, test and generated files.
-
-Default `--threshold 0.82`, `--min-lines 4`, `--min-nodes 20`.
+Defaults: `--threshold 0.82`, `--min-lines 4`, `--min-nodes 20`.
 
 ## C# vs Java
 
-C# adds expression-bodied methods and skips `bin` / `obj` / `.vs`. Nested-method rules match the Java idea (no method inside another executable).
+| Topic | Java | C# |
+|-------|------|-----|
+| Body | `block` only | `block` or **`=>`** |
+| Nested executable | skip inside method/constructor/lambda | also **local function** / **anonymous function** |
+| Method in local class inside another method | not a candidate | same |
+| Type-level methods | need `block` | need `block` or **`=>`** |
+| Test names | `*Test.java` | `*Tests.cs`, `*Test.cs` |
+| Build dirs | `target`, … | + **`bin`**, **`obj`**, **`.vs`** |
+| Toolchain | unused by dryer | **`dotnet` not needed** |
 
-## Running dryer
+## Running
 
 ```powershell
 cd path\to\dryer
+.\.venv\Scripts\pip install -e .
 .\.venv\Scripts\python.exe -m dryer --root "D:\path\to\YourSolution"
 ```
 
-Use `--changed`, `--source-root`, positional filters, and `--min-lines` / `--min-nodes` as needed.
+Flags: `--changed`, `--source-root`, positional filters, `--min-lines`, `--min-nodes`, `--threshold`.
 
 ## Smoke test
 
